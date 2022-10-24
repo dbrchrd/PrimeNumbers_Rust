@@ -31,6 +31,26 @@ fn main() -> Result<()> {
                 println!("DATABASE:");
                 println!("  -r / --reset-db   : Reset the database");
             }
+            if el.contains("-t=") || el.contains("--to=") {
+                let to: Vec<&str> = el.split("=").collect();
+                let k_to = to[0];
+                let v_to: i64 = match to[1]
+                    .trim()
+                    .parse()
+                    //.expect("Failed ! The max option must have a number.")
+                {
+                    Ok(n) => n,
+                    Err(_) => {
+                        println!("Failed ! This option must have a number.");
+                        -1
+                    },
+                };
+                if v_to != -1 {
+                    number_to_reach = v_to;
+                }
+
+                println!("{} {}", k_to, v_to)
+            }
             if el == "-r" || el == "--reset-db" {
                 reset_db = true;
             }
