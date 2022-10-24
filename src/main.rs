@@ -31,6 +31,9 @@ fn main() -> Result<()> {
                 println!("DATABASE:");
                 println!("  -r / --reset-db   : Reset the database");
             }
+            if el == "-r" || el == "--reset-db" {
+                reset_db = true;
+            }
         }
     }
 
