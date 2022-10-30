@@ -99,6 +99,35 @@ fn main() -> Result<()> {
 
     println!("Last : {} (n°{})", id_to_start, number_to_start);
 
+    let mut tot_it: i64 = 0;
+    let mut is_prime: bool;
+    for i in number_to_start + 1..number_to_reach + 1 {
+        //println!(" {}", i);
+        is_prime = true;
+        if i > 1 {
+            let mut j: i64 = 2;
+            while j < i {
+                if i % j == 0 {
+                    is_prime = false;
+                    break;
+                }
+                j += 1
+            }
+            if is_prime {
+                let f: f64 = i as f64 / number_to_reach as f64 * 100.0;
+                println!("✓ {} ({:.4}%)", i, f);
+                conn.execute(
+                    "INSERT INTO Primes (Id, Prime) VALUES (?1, ?2)",
+                    (id_to_start + tot_it + 1, i),
+                )
+                .unwrap();
+                tot_it += 1
+            } else {
+                //println!("{} is a not prime number", i);
+            }
+        }
+    }
+
     let mut stmt = conn.prepare("SELECT * FROM Primes;").unwrap();
     let primes_iter = stmt
         .query_map([], |row| {
