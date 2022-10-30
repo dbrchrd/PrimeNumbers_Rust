@@ -67,5 +67,37 @@ fn main() -> Result<()> {
         (),
     )
     .unwrap();
+
+    let mut base_stmt: Statement =
+        conn.prepare("SELECT Id, Prime FROM Primes ORDER BY Prime DESC LIMIT 1;")?;
+    let base_iter = base_stmt
+        .query_map([], |row| {
+            Ok(Prime {
+                id: row.get(0)?,
+                value: row.get(1)?,
+            })
+        })
+        .unwrap();
+    for prime in base_iter {
+        id_to_start = prime.unwrap().id;
+    }
+
+    let mut base_stmt: Statement =
+        conn.prepare("SELECT Id, Prime FROM Primes ORDER BY Prime DESC LIMIT 1;")?;
+    let base_iter = base_stmt
+        .query_map([], |row| {
+            Ok(Prime {
+                id: row.get(0)?,
+                value: row.get(1)?,
+            })
+        })
+        .unwrap();
+
+    for prime in base_iter {
+        number_to_start = prime.unwrap().value;
+    }
+
+    println!("Last : {} (n°{})", id_to_start, number_to_start);
+
     Ok(())
 }
