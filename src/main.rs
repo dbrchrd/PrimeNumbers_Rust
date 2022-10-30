@@ -13,6 +13,7 @@ fn get_program_name() -> String {
     let prog = env::args().next().unwrap();
     String::from(Path::new(&prog).file_name().unwrap().to_str().unwrap())
 }
+
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
 
@@ -34,16 +35,12 @@ fn main() -> Result<()> {
             if el.contains("-t=") || el.contains("--to=") {
                 let to: Vec<&str> = el.split("=").collect();
                 let k_to = to[0];
-                let v_to: i64 = match to[1]
-                    .trim()
-                    .parse()
-                    //.expect("Failed ! The max option must have a number.")
-                {
+                let v_to: i64 = match to[1].trim().parse() {
                     Ok(n) => n,
                     Err(_) => {
                         println!("Failed ! This option must have a number.");
                         -1
-                    },
+                    }
                 };
                 if v_to != -1 {
                     number_to_reach = v_to;
@@ -57,5 +54,18 @@ fn main() -> Result<()> {
         }
     }
 
+    let conn: Connection = Connection::open("p.db").unwrap();
+
+    if reset_db {
+        conn.execute("DROP TABLE IF EXISTS Primes;", ()).unwrap();
+    }
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS Primes (
+             Id INTEGER,
+             Prime INTEGER
+         )",
+        (),
+    )
+    .unwrap();
     Ok(())
 }
