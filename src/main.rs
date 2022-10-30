@@ -99,5 +99,19 @@ fn main() -> Result<()> {
 
     println!("Last : {} (n°{})", id_to_start, number_to_start);
 
+    let mut stmt = conn.prepare("SELECT * FROM Primes;").unwrap();
+    let primes_iter = stmt
+        .query_map([], |row| {
+            Ok(Prime {
+                id: row.get(0)?,
+                value: row.get(1)?,
+            })
+        })
+        .unwrap();
+
+    for prime in primes_iter {
+        println!("Found prime {:?}", prime.unwrap());
+    }
+
     Ok(())
 }
