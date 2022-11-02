@@ -22,6 +22,9 @@ fn main() -> Result<()> {
     let mut number_to_reach: i64 = 1_000_000_000;
     let mut reset_db: bool = false;
 
+    let mut arry: [i64; 10000] = [-1; 10000];
+    let mut arry_it: i64 = 0;
+
     if args.len() > 1 {
         for el in args.clone() {
             if el.contains("-h") || el.contains("--help") {
@@ -105,25 +108,42 @@ fn main() -> Result<()> {
         //println!(" {}", i);
         is_prime = true;
         if i > 1 {
-            let mut j: i64 = 2;
-            while j < i {
-                if i % j == 0 {
-                    is_prime = false;
-                    break;
+            if i as i64 % 10_000 as i64 == 0 {
+                for a in 0..arry.len() {
+                    if arry[a] != -1 {
+                        conn.execute(
+                            "INSERT INTO Primes (Id, Prime) VALUES (?1, ?2)",
+                            (id_to_start + tot_it + 1, i),
+                        )
+                        .unwrap();
+                        println!("Adding to db : {:?}", a);
+                    }
+                    arry[a] = -1;
                 }
-                j += 1
-            }
-            if is_prime {
-                let f: f64 = i as f64 / number_to_reach as f64 * 100.0;
-                println!("✓ {} ({:.4}%)", i, f);
-                conn.execute(
-                    "INSERT INTO Primes (Id, Prime) VALUES (?1, ?2)",
-                    (id_to_start + tot_it + 1, i),
-                )
-                .unwrap();
-                tot_it += 1
+                arry_it = 0;
             } else {
-                //println!("{} is a not prime number", i);
+                let mut j: i64 = 2;
+                while j < i {
+                    if i % j == 0 {
+                        is_prime = false;
+                        break;
+                    }
+                    j += 1
+                }
+                if is_prime {
+                    let f: f64 = i as f64 / number_to_reach as f64 * 100.0;
+                    println!("✓ {} ({:.4}%)", i, f);
+                    arry[arry_it as usize] = i;
+                    /*conn.execute(
+                        "INSERT INTO Primes (Id, Prime) VALUES (?1, ?2)",
+                        (id_to_start + tot_it + 1, i),
+                    )
+                    .unwrap();*/
+                    arry_it += 1;
+                    tot_it += 1
+                } else {
+                    //println!("{} is a not prime number", i);
+                }
             }
         }
     }
